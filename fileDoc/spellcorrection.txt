@@ -1,0 +1,149 @@
+
+
+0. 项目准备：
+使用日志系统
+	class MyLog//单例模式
+	{};
+
+
+一、离线部分：词典的创建
+ ------------------
+|  word	frequency  |
+|   ...    ...     |
+ ------------------
+
+1.1 创建词典的时候使用map<string, int> 存储词典 -->
+		保存为一个文件，存放在硬盘上
+
+1.2 读取词典的时候使用vector<pair<string,int> >存储词典
+
+
+1.3 index文件   
+
+ iphoe    map< string, vector<int> >
+					//map<string, vector<pair<string, int> >
+			存储的是词典中的一条记录在vector中的下标值
+ i :  vector<int>, index liberty .... iphone
+ p :   ... iphone
+ h :   ... iphone
+ o :   ... iphone
+ e :   ... iphone
+ 
+ 
+string  -->	 vector<pair<string, int> >
+ a : a freq1,   able  freq2, abandon  freq3,
+ b : 
+
+
+
+二、在线部分：对客户端提供服务
+2.0 从配置文件my.conf开始
+配置文件的内容
+
+ ---------------------------------------------------   
+|    myip       192.168.175.128                     |
+|    myport	    8888                                |
+|    mydict	    /home/luo/project/data/mydict.dat   | 
+|    myindex	  /home/luo/project/data/index.dat    |
+|                                                   |
+ ---------------------------------------------------
+2.1 核心类
+class MyConf
+{
+private:
+    std::map<std::string, std::string> conf_;
+};
+
+class Dict
+{//
+private:
+    vector<pair<string, int> >;
+};
+
+class Cache
+{
+private:
+	std::unordered_map<string, MyData> _hashMap;
+};
+
+
+class Thread
+{};
+
+class ThreadPool
+{};
+
+class TcpServer
+{};
+
+
+class Task
+{
+public:
+    void process()
+    {
+	//得到词典/索引   (方法一：通过单例模式)
+	//...再做处理
+    }	
+
+    int calcDistance(std::string & rhs);//求最小编辑距离算法
+
+private:
+    int peerfd_;
+    string query_;
+    //...
+    std::priority_queue<MyResult> que_;//把结果存入一个优先级队列
+};
+
+//为计算的结果封装一个类MyResult
+struct MyResult
+{
+    std::string  candidate_word;
+    int frequency;
+    int distance;
+};
+
+MyResult r1;
+MyResult r2;
+
+bool compareResult(const MyResult & lhs, const MyResult & rhs);
+
+
+3. 求解字符串的相似度的方法(算法)
+    * 最长公共子序列 LCS  
+    * 最小编辑距离   (iphoe  -->  iphone  推荐这种方法)
+			编辑的方式：添加、修改、删除
+
+
+
+三、提高查询的速度
+
+Q1. 增加缓存机制
+class MyCache
+{
+
+private:
+    std::map<query, result>;
+};
+
+Q2. 缓存的存放位置：
+    1. 每一个线程都需要拥有各自的缓存
+    2. 线程池也需要一个自己的缓存（查询效率）
+
+Q3. 缓存的更新：
+        每隔一段时间（如10分钟）要把每一个线程的cache写入到
+    线程池中的cache里面去；再把线程池中的cache写回
+    到每一个线程中去，同时还要写入到硬盘cache（文件/数据库）
+
+
+
+四、处理中文 
+
+Q1. 编码规则 UTF-8 -->写出一个中英文通用的最小编辑距离算法 
+Q2. 对中文进行分词 -->分词库： 
+	海量公司(商业)        http://www.hylanda.com/
+	中科院(免费：NLPIR)   http://ictclas.nlpir.org/  
+	结巴分词库(cppjieba)  https://github.com/yanyiwu/cppjieba
+
+CppJieba代码详解
+	http://yanyiwu.com/work/2014/02/10/cppjieba-dai-ma-xiang-jie.html
