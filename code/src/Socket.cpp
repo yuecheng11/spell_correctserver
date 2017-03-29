@@ -22,7 +22,96 @@ Socket::~Socket()
 {
 	::close(_listenfd);
 }
-Socket::socket_bind()
+void Socket::socket_bind(InetAddress& addr)
 {
+	int ret = ::bind(_listenfd,
+					(struct sockaddr*)(addr.getInetAddressPtr()),
+						sizeof(struct sockaddr));
+	if(ret == -1)
+	{
+		perror("bind error");
+		exit(1);
+	}
+}
+void Socket::socket_listen()
+{
+	int ret =  ::listen(_listenfd,10);
+	if(ret == -1)
+	{
+		perror("listenfd error");
+		exit(0);
+	}
+}
 
+void Socket::ready(InetAddress& addr)
+{
+	setReuseAddr(true);
+	setReusePort(true);
+	socket_bind(addr);
+	socket_listen();
+}
+
+int Socket::socket_accept()
+{
+	int peerfd;
+	InetAddress peerAddr;
+	socklen_t peerfdlen;
+	peerfd = ::accept(_listenfd,
+					(struct sockaddr*)(peerAddr.getInetAddressPtr()),
+					&peerfdlen);
+	if(peerfd == -1)
+	{
+		perror("accept error");
+	}
+	else
+	{
+		cout<<"accept a new client: "
+			<<peerAddr.getIp()<<"port: "<<peerAddr.getPort()<<endl;
+	}
+}
+int Socket::fd()
+{
+	return _listenfd;
+}
+
+void Socket::setReuseAddr(bool flag)
+{
+	int on = flag ? 1 : 0;
+	int ret = ::setsockopt(_listenfd,
+							SOL_SOCKET,
+							SO_REUSEADDR,
+							&on,
+							static_cast<socklen_t>(sizeof(on)));
+
+	if(ret == -1)
+	{
+		perror("setReuseAddr error");
+		::close(_listenfd);
+		exit(0);
+		
+	}
+}
+
+void Socket::setReusePort(bool flag)
+{
+#ifdef SO_REUSEPORT
+	int on = flag ? 1 : 0;
+	int ret = ::setsockopt(_listenfd,
+							SOL_SOCKET,
+							SO_REUSEPORT,
+							&on,
+							static_cast<socklen_t>(sizeof(on)));
+
+	if(ret == -1)
+	{
+		perror("setReusePort error");
+		::close(_listenfd);
+		exit(0);
+		
+	}
+#else 
+	if(flag)
+	{
+		cout<<"SO_REUSEPORT is not supported"<<endl;
+	}
 }

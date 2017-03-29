@@ -6,7 +6,9 @@
 #include <stdlib.h>
 #include <sys/types.h>			/* See NOTES */
 #include <sys/socket.h>
+using namespace std;
 
+class InetAddress;
 class Socket:Noncopyable
 {
 public:
@@ -14,12 +16,15 @@ public:
 	Socket(int fd);
 	~Socket();
 	
-	void ready();
+	void ready(InetAddress& addr);
+	int socket_accept();
+	int fd();
 private:
 	void socket_bind();
 	void socket_listen();
-	int socket_accept();
-	int fd();
+	
+	void setReuseAddr(bool flag);
+	void setReusePort(bool flag);
 private:
 	int _listenfd;
 };
