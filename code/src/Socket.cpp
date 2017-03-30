@@ -1,4 +1,5 @@
 #include "Socket.h"
+#include "InetAddress.h"
 
 int create_sockfd()
 {
@@ -62,11 +63,22 @@ int Socket::socket_accept()
 	if(peerfd == -1)
 	{
 		perror("accept error");
+		return -1;
 	}
 	else
 	{
 		cout<<"accept a new client: "
-			<<peerAddr.getIp()<<"port: "<<peerAddr.getPort()<<endl;
+			<<peerAddr.getIp()<<" port: "<<peerAddr.getPort()<<endl;
+	}
+	return peerfd;
+}
+void Socket::shutdownwrite()
+{
+	int ret = ::shutdown(_listenfd,SHUT_WR);
+	if(ret == -1)
+	{
+		perror("shutdown error");
+		exit(EXIT_FAILURE);
 	}
 }
 int Socket::fd()
@@ -94,7 +106,7 @@ void Socket::setReuseAddr(bool flag)
 
 void Socket::setReusePort(bool flag)
 {
-#ifdef SO_REUSEPORT
+#if SO_REUSEPORT
 	int on = flag ? 1 : 0;
 	int ret = ::setsockopt(_listenfd,
 							SOL_SOCKET,
@@ -114,4 +126,5 @@ void Socket::setReusePort(bool flag)
 	{
 		cout<<"SO_REUSEPORT is not supported"<<endl;
 	}
+#endif
 }

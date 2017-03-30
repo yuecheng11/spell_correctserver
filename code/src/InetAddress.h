@@ -6,6 +6,8 @@
 #include <string>
 #include <string.h>
 #include <arpa/inet.h>
+#include <iostream>
+
 using namespace std;
 
 class InetAddress

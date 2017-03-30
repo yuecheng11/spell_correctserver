@@ -6,14 +6,14 @@ InetAddress:: InetAddress()
 InetAddress::InetAddress(unsigned short port)
 {
 	memset(&servaddr,0,sizeof(struct sockaddr_in));
-	servaddr.sin_famlily = AF_INET;
+	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(port);
 	servaddr.sin_addr.s_addr = INADDR_ANY;
 }
 InetAddress::InetAddress(const char * ip,unsigned short port)
 {
 	memset(&servaddr,0,sizeof(struct sockaddr_in));
-	servaddr.sin_famlily = AF_INET;
+	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(port);
 	servaddr.sin_addr.s_addr = inet_addr(ip);
 }

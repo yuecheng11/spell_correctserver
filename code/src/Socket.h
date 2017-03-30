@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <sys/types.h>			/* See NOTES */
 #include <sys/socket.h>
+#include <iostream>
+#include <unistd.h>
+
 using namespace std;
 
 class InetAddress;
@@ -18,9 +21,10 @@ public:
 	
 	void ready(InetAddress& addr);
 	int socket_accept();
+	void shutdownwrite();
 	int fd();
 private:
-	void socket_bind();
+	void socket_bind(InetAddress& addr);
 	void socket_listen();
 	
 	void setReuseAddr(bool flag);
