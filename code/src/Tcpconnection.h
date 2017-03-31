@@ -12,8 +12,8 @@ class Tcpconnection:Noncopyable
 public:
 	Tcpconnection(int fd);
 	~Tcpconnection();
-	string receive();
-	void send();
+	int receive();
+	int send(const char *test);
 	void shutdown();
 private:
 	Socket _sock;

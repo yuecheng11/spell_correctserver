@@ -18,7 +18,7 @@ unsigned short strtoshort(string port)
 TcpServer::TcpServer(const string& fileStr)
 	:_conf(fileStr)
 	,_listenSock()
-	,_epoll(_listenSock)
+	,_epoll(_listenSock.fd())
 {
 #if 1 
 	// test show configure
@@ -34,6 +34,7 @@ TcpServer::TcpServer(const string& fileStr)
 }
 void TcpServer::start()
 {
-	_epoll.loop();
+
+	_epoll.epoll_loop();
 	
 }

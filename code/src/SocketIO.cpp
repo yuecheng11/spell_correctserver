@@ -14,20 +14,12 @@ int SocketIO::getFd()
 int SocketIO::readmessage(char* buf,int size)
 {
 
-	
 	return  ::read(_fd,buf,size);
 	
 }
-int SocketIO::writemessage()
+int SocketIO::writemessage(const char* str)
 {
 	int nwrite;
-	char* buf[1024];
-	nwrite = ::write(_fd,buf,MAXSIZE);
-	if(nwrite == -1)
-	{
-	}
-	else
-	{
-	}
+	nwrite = ::write(_fd,str,strlen(str));
 	return nwrite;
 }

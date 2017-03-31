@@ -1,4 +1,7 @@
 #include "Epoller.h"
+#include <string.h>
+#include "Socket.h"
+#include <assert.h>
 
 void Add_event(int epollfd,int fd,int state)
 {
@@ -26,6 +29,7 @@ void Mod_event(int epollfd,int fd,int state)
 Epoller::Epoller(int fd)
 	:epollfd(epoll_create(MAXEPOLLSIZE))
 	,listenfd(fd)
+	,listensock(listenfd)
 	,_isloop(false)
 {
 	struct epoll_event events[MAXEPOLLSIZE];
@@ -40,32 +44,98 @@ void Epoller::epoll_loop()
 	{
 		_isloop = true;
 
-		/*while(1)
-		{
-			int conn_sock = _listenSock.socket_accept();
-			if(conn_sock == -1)
-			{
-				perror("accept error");
-				continue;
-			}
-			else
-			{
-				//init link
-				Tcpconnection* pconn = new Tcpconnection(conn_sock);
-				_connmap[conn_sock] = pconn;
-				while(1)
-				{
-					cout<<"receive message: "<<pconn->receive().c_str()<<endl;
-				}
-					
-			}
-			}
-			*/
-		int ret;
 		while(_isloop)
 		{
-			ret = epoll_wait(epollfd,events,MAXEPOLLSIZE,-1);
-			//process msg
+			wait_Epollfd();
 		}
+	}
+}
+void Epoller::wait_Epollfd()
+{
+	int ret;
+	char buff[MAXSIZE];
+	memset(buff,0,sizeof(buff));
+	while(1)
+	{
+		ret = epoll_wait(epollfd,events,MAXEPOLLSIZE,-1);
+		handle_events(ret,buff);
+	}
+}
+void Epoller::handle_events(int num,char* buf)
+{
+	int fd;
+	for(int i = 0;i<num; ++i)
+	{
+		fd = events[i].data.fd;
+	    if((fd == listenfd) && (events[i].events & EPOLLIN))
+	    {
+	    	handle_accept();
+	    }
+		else if(events[i].events & EPOLLIN)
+		{
+			read_message(fd);
+		}
+		else if(events[i].events & EPOLLOUT)
+		{
+			write_message(fd);
+		}
+	}
+}
+
+void Epoller::handle_accept()
+{
+	int newcli = listensock.socket_accept();
+	if(newcli == -1)
+	{
+		perror("accept error");
+		return;
+	}
+	else
+	{
+		Add_event(epollfd,newcli,EPOLLIN);
+		Tcpconnection* pconn = new Tcpconnection(newcli);
+		_connmap[newcli] = pconn;
+	}
+}
+
+void Epoller::read_message(int fd)
+{
+	map<int,Tcpconnection*>::iterator it 
+		= _connmap.find(fd);
+	assert(it != _connmap.end());
+	int ret = it->second->receive();
+	if(ret == -1)
+	{
+		//perror("read error");
+		//::close(fd);
+		Del_event(epollfd,fd,EPOLLIN);
+	}
+	else if(ret == 0)
+	{
+		//fprintf(stderr,"clent error,close.\n");
+		//::close(fd);
+		Del_event(epollfd,fd,EPOLLIN);
+	}
+	else
+	{
+		Mod_event(epollfd,fd,EPOLLOUT);
+	}
+}
+
+void Epoller::write_message(int fd)
+{
+	map<int,Tcpconnection*>::iterator it 
+			= _connmap.find(fd);
+	assert(it != _connmap.end());
+	int ret = it->second->send("test\n");
+	if(ret == -1)
+	{
+		//perror("read error");
+		//::close(fd);
+		Del_event(epollfd,fd,EPOLLOUT);
+	}
+	else
+	{
+		Mod_event(epollfd,fd,EPOLLIN);
 	}
 }

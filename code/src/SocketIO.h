@@ -22,7 +22,7 @@ public:
 
 	int getFd();
 	int readmessage(char* buf,int size);
-	int writemessage();
+	int writemessage(const char* str);
 private:
 	int _fd;
 };

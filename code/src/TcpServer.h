@@ -5,6 +5,7 @@
 #include "Socket.h"
 #include <map>
 #include "Tcpconnection.h"
+#include "Epoller.h"
 #include <string.h>
 
 using namespace std;

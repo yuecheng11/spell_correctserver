@@ -1,6 +1,7 @@
 #include "Tcpconnection.h"
 #include <string>
 #include <stdlib.h>
+
 Tcpconnection::Tcpconnection(int fd)
 	:_sockIO(fd)
 	,_sock(fd)
@@ -16,7 +17,7 @@ Tcpconnection::~Tcpconnection()
 		shutdown();
 	}
 }
-string Tcpconnection::receive()
+int Tcpconnection::receive()
 {
 	char buff[MAXSIZE];
 	memset(buff,0,sizeof(buff));
@@ -25,17 +26,31 @@ string Tcpconnection::receive()
 	{
 		perror("read error");
 		::close(_sockIO.getFd());
-		return buff;
 	}
 	else if(nread == 0)
 	{
 		cout<<"client close"<<endl;
 		::close(_sockIO.getFd());
-		return buff;
 	}
-	return string(buff);
+	else 
+	{
+		cout<<"receive message: "<<buff<<endl;
+		
+	}
+
+	return nread;
 }
 
+int Tcpconnection::send(const char* str)
+{
+	int nwrite = _sockIO.writemessage(str);
+	if(nwrite == -1)
+	{
+		perror("read error");
+		::close(_sockIO.getFd());
+	}
+	return nwrite;
+}
 void Tcpconnection::shutdown()
 {
 	if(!_isShutdownWrite)
