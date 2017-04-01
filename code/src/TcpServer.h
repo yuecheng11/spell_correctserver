@@ -12,11 +12,10 @@ using namespace std;
 class TcpServer
 {
 public:
-	TcpServer(const string& fileStr);
+	TcpServer(const char* ip,unsigned short port);
 	void start();
 	void stop();
 private:
-	Myconf _conf;
 	Socket _listenSock;
 	map<int,Tcpconnection*> _connmap;
 	Epoller _epoll;

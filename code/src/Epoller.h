@@ -19,6 +19,7 @@ public:
 	void handle_accept();
 	void read_message(int fd);
 	void write_message(int fd);
+	void epoll_unloop();
 private:
 
 private:

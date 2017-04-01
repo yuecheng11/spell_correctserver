@@ -7,7 +7,7 @@ using namespace std;
 
 int main()
 {
-	TcpServer server("../conf/my.conf");
+	SpellTcpserver server("../conf/my.conf");
 	server.start();
 
 	return 0;	

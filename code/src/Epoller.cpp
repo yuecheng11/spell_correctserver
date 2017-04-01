@@ -50,6 +50,13 @@ void Epoller::epoll_loop()
 		}
 	}
 }
+void Epoller::epoll_unloop()
+{
+	if(_isloop)
+	{
+		_isloop = false;
+	}
+}
 void Epoller::wait_Epollfd()
 {
 	int ret;
