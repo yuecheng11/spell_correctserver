@@ -22,6 +22,13 @@ SpellTcpserver::SpellTcpserver(const string & fileStr)
 	#endif
 
 }
+
+void SpellTcpserver::start()
+{
+	_tcpServer.start();
+	_threadpoll.start();
+}
+
 void SpellTcpserver::stop()
 {
 	_tcpServer.stop();
