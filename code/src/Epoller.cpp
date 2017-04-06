@@ -26,11 +26,12 @@ void Mod_event(int epollfd,int fd,int state)
 	epoll_ctl(epollfd,EPOLL_CTL_MOD,fd,&ev);
 }
 
-Epoller::Epoller(int fd)
+Epoller::Epoller(int fd,Buffer& buff)
 	:epollfd(epoll_create(MAXEPOLLSIZE))
 	,listenfd(fd)
 	,listensock(listenfd)
 	,_isloop(false)
+	,_buff(buff)
 {
 	struct epoll_event events[MAXEPOLLSIZE];
 	memset(events,0,sizeof(struct epoll_event));
@@ -110,7 +111,8 @@ void Epoller::read_message(int fd)
 	map<int,Tcpconnection*>::iterator it 
 		= _connmap.find(fd);
 	assert(it != _connmap.end());
-	int ret = it->second->receive();
+	string data;
+	int ret = it->second->receive(data);
 	if(ret == -1)
 	{
 		//perror("read error");
@@ -126,7 +128,17 @@ void Epoller::read_message(int fd)
 	else
 	{
 		Mod_event(epollfd,fd,EPOLLOUT);
+		cout<<"Epoller: data: "<<data<<endl;
+		int pos = data.find("\n");
+		string subdata = data.substr(0,pos);
+		Mytask task(subdata,fd);
+		addTask(task);
 	}
+}
+
+void Epoller::addTask(Task * ptask)
+{
+	_buff.push(ptask);
 }
 
 void Epoller::write_message(int fd)

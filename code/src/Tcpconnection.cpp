@@ -17,7 +17,7 @@ Tcpconnection::~Tcpconnection()
 		shutdown();
 	}
 }
-int Tcpconnection::receive()
+int Tcpconnection::receive(string& data)
 {
 	char buff[MAXSIZE];
 	memset(buff,0,sizeof(buff));
@@ -35,7 +35,7 @@ int Tcpconnection::receive()
 	else 
 	{
 		cout<<"receive message: "<<buff<<endl;
-		
+		data = buff;
 	}
 
 	return nread;

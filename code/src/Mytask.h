@@ -1,6 +1,11 @@
 #ifndef _MYTASK_H
 #define _MYTASK_H
 #include<iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string>
+
 class Task
 {
 public:
@@ -10,9 +15,23 @@ public:
 class Mytask:public Task
 {
 public:
-	void process()
+	Mytask(string data,int fd)
+	:queryWord(data)
+	,connfd(fd)
 	{
-		cout<<"todo"<<endl;
+		sendstr = "0";
 	}
+	int process(string& str)
+	{
+		sendstr = queryWord;
+		int ret = ::write(connfd,sendstr.c_str(),1);
+		if(ret > 0)
+			cout<<"response cliend"<<endl;
+		return connfd;
+	}
+private:
+	string queryWord;
+	string sendstr;
+	int connfd;	
 };
 #endif

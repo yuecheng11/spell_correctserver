@@ -4,14 +4,17 @@
 class SpellTcpserver
 {
 public:
-	SpellTcpserver(const string& fileStr);
+	SpellTcpserver(const string& fileStr,const int bufsize);
 	~SpellTcpserver();
 	void start();
 	void stop();
 private:
 	Myconf _conf;
-	TcpServer _tcpServer;
+	int _buffsize;
+	Buffer _buff;
 	Threadpoll _threadpoll;
+	TcpServer _tcpServer;
+	//Buffer
 };
 
 #endif

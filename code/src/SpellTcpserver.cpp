@@ -11,10 +11,12 @@ unsigned short strtoshort(string port)
 	return newport;
 }
 
-SpellTcpserver::SpellTcpserver(const string & fileStr)
+SpellTcpserver::SpellTcpserver(const string & fileStr,const int bufsize)
 :_conf(fileStr)
-,_tcpServer(_conf.getConfMap()["my_ip"].c_str(),strtoshort(_conf.getConfMap()["my_port"]))
-,Threadpoll(4,100)
+,_buff(bufsize)
+,_threadpoll(4,_buff)
+,_tcpServer(_conf.getConfMap()["my_ip"].c_str(),strtoshort(_conf.getConfMap()["my_port"]),_buff)
+
 {
 	#if 1 
 	// test show configure

@@ -16,10 +16,12 @@ public:
 
 	bool full();
 	bool empty();
+
 	
 private:
 	int _size;
 	queue<Task*> _tQue;
+	queue<Task*> _endQue;
 	MutexLock _mutex;
 	Condition _notFull;
 	Condition _notEmpty;

@@ -12,7 +12,7 @@ class Tcpconnection:Noncopyable
 public:
 	Tcpconnection(int fd);
 	~Tcpconnection();
-	int receive();
+	int receive(string& data);
 	int send(const char *test);
 	void shutdown();
 private:

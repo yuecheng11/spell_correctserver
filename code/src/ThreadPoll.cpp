@@ -2,10 +2,10 @@
 #include <unistd.h>
 using namespace std;
 
-Threadpoll::Threadpoll(int threadnum,int bufsize)
+Threadpoll::Threadpoll(int threadnum,Buffer& buff)
 :_threadnum(threadnum)
-,_buffsize(bufsize)
-,_buff(_buffsize)
+//,_buffsize(bufsize)
+,_buff(buff)
 ,_isExit(false)
 {
 	vecThread.reserve(_thnum);
@@ -70,7 +70,9 @@ void Threadpoll::threadFunc()
 		Task* pTask = getTask();
 		if(NULL != pTask)
 		{
-			pTask->process();
+			string str;
+			int connfd = pTask->process(str);
+			
 		}
 	}
 }

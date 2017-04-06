@@ -5,11 +5,12 @@
 #include "Buffer.h"
 #include "Thread.h"
 #include "Mytask.h"
+#include <string>
 
 class Threadpoll
 {
 public:
-	Threadpoll(int threadnum,int bufsize);
+	Threadpoll(int threadnum,Buffer& buff);
 	~Threadpoll();
 	void start();
 	void stop();
@@ -21,8 +22,8 @@ private:
 private:
 	int _threadnum;
 	vector<Thread *> vecThread;
-	int _buffsize;
-	Buffer _buff;
+	//int _buffsize;
+	Buffer& _buff;
 	bool _isExit;
 };
 

@@ -33,6 +33,7 @@ Task* Buffer::pop()
 	}
 	Task* ptask = _tQue.front();
 	_tQue.pop();
+	_endQue.push(ptask);
 	_notFull.notify();
 }
 
